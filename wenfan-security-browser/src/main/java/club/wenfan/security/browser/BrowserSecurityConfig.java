@@ -7,20 +7,17 @@ import club.wenfan.security.core.authentication.mobile.SmsCodeAuthenticationSecu
 import club.wenfan.security.core.properties.SecurityConstants;
 import club.wenfan.security.core.properties.SecurityProperties;
 import club.wenfan.security.core.vaildate.config.VaildateCodeSecurityConfig;
-import club.wenfan.security.core.vaildate.filter.SmsCodeFilter;
-import club.wenfan.security.core.vaildate.filter.VaildateCodeFilter;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 /**
  * @author:wenfan
@@ -31,13 +28,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 public class BrowserSecurityConfig  extends AbstractChannelSecurityConfig {
 
     @Autowired
-    private SecurityProperties securityProperties ;
-
-    @Autowired
-    private WenfanAuthenticationSuccessHandler  wenfanAuthenticationSuccessHandler;
-
-    @Autowired
-    private WenfanAuthenticationFailurelHandler wenfanAuthenticationFailureHandler;
+    private SecurityProperties securityProperties;
 
     @Autowired
     private DataSource dataSource;
@@ -51,6 +42,8 @@ public class BrowserSecurityConfig  extends AbstractChannelSecurityConfig {
     @Autowired
     private VaildateCodeSecurityConfig vaildateCodeSecurityConfig;
 
+    @Autowired
+    private SpringSocialConfigurer springSocialConfigurer;
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository(){
@@ -66,6 +59,8 @@ public class BrowserSecurityConfig  extends AbstractChannelSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -76,6 +71,8 @@ public class BrowserSecurityConfig  extends AbstractChannelSecurityConfig {
                 //加入smsCodeAuthenticationSecurityConfig的配置类
                 .apply(smsCodeAuthenticationSecurityConfig)
                 .and()
+                .apply(springSocialConfigurer)
+                .and()
                 .rememberMe()
                     .tokenRepository(persistentTokenRepository())
                     .tokenValiditySeconds(securityProperties.getRememberSeconds())
@@ -83,9 +80,12 @@ public class BrowserSecurityConfig  extends AbstractChannelSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers(SecurityConstants.DEFAULT_UNAUTHENTICATION_URL
+                        ,securityProperties.getSignUrl()  //注册
                         ,SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_MOBILE
                         ,securityProperties.getLoginPage()
                         ,SecurityConstants.DEFAULT_VALIDATE_CODE_URL_PREFIX+"/*"
+                        ,"/static/*"
+                        ,"/user/regist"
                         ).permitAll()
                 .anyRequest()
                 .authenticated()

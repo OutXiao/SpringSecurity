@@ -27,7 +27,6 @@ public class User {
     @NotBlank   //不为空 与@Valid 注解使用
     private String password;
 
-
     @JsonView(UserSimpeView.class) //
     public String getUsername() {
         return username;

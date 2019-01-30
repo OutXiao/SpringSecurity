@@ -1,7 +1,5 @@
 package club.wenfan.security.core.properties;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * @author:wenfan
@@ -10,7 +8,10 @@ import org.springframework.stereotype.Component;
  */
 public class BrowserProperties {
 
-    private String loginPage="/login.html";
+    // 默认注册页面
+    private String signUrl="/register.html";
+    // 默认登陆页面
+    private String loginPage=SecurityConstants.DEFAULT_LOGIN_PAGE_URL;
 
     public String getLoginPage() {
         return loginPage;
@@ -18,5 +19,13 @@ public class BrowserProperties {
 
     public void setLoginPage(String loginPage) {
         this.loginPage = loginPage;
+    }
+
+    public String getSignUrl() {
+        return signUrl;
+    }
+
+    public void setSignUrl(String signUrl) {
+        this.signUrl = signUrl;
     }
 }

@@ -12,12 +12,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "club.wenfan.security.browser")
 public class SecurityProperties {
 
-    //默认的登陆页面，通过配置文件将会读进来新的loginpage
-    private String loginPage="/login.html";
+
+    // 默认注册页面
+    private String signUrl="/register.html";
+    // 默认登陆页面
+    private String loginPage=SecurityConstants.DEFAULT_LOGIN_PAGE_URL;
 
     private int rememberSeconds=60;
 
     private VaidateCodeProperties code = new VaidateCodeProperties();
+
+    private SocialProperties social =new SocialProperties();
 
     private LoginType loginType=LoginType.JSON; // 默认返回json格式
 
@@ -49,6 +54,13 @@ public class SecurityProperties {
         this.loginPage = loginPage;
     }
 
+    public SocialProperties getSocial() {
+        return social;
+    }
+
+    public void setSocial(SocialProperties social) {
+        this.social = social;
+    }
 
     public int getRememberSeconds() {
         return rememberSeconds;
@@ -56,5 +68,13 @@ public class SecurityProperties {
 
     public void setRememberSeconds(int rememberSeconds) {
         this.rememberSeconds = rememberSeconds;
+    }
+
+    public String getSignUrl() {
+        return signUrl;
+    }
+
+    public void setSignUrl(String signUrl) {
+        this.signUrl = signUrl;
     }
 }
